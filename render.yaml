@@ -1,31 +1,49 @@
-services:
-  # 🔹 Backend API Service
-  - type: web
-    name: siteflow-api
-    region: oregon
-    plan: free
-    env: production
-    rootDir: .
-    buildCommand: cd server && npm install
-    startCommand: node server/index.js
-    envVars:
-      - key: MONGODB_URI
-        fromDatabase:
-          name: siteflow-db
-          property: connectionString
-      - key: JWT_SECRET
-        generateValue: true
-    domains:
-      - siteflow-api.onrender.com  # Auto-generated, or use custom
+# render.yaml
+#
+# Deploys the SiteFlow frontend and connects it to
+# the existing backend: https://b-qomv.onrender.com/server
+#
+# No backend redeployment needed.
 
-  # 🔹 Frontend Static Site
-  - type: static
-    name: siteflow-frontend
-    region: oregon
-    plan: free
-    rootDir: .
-    buildCommand: cd client && npm install && npm run build
-    publishPath: client/dist
-    cleanPublishPath: true
-    domains:
-      - siteflow.onrender.com  # Change to your custom domain
+- type: static
+  name: siteflow-frontend
+  region: oregon
+  plan: free
+  rootDir: .
+
+  # Install dependencies and build the React app
+  buildCommand: cd client && npm install && npm run build
+
+  # Serve from Vite's output directory
+  publishPath: client/dist
+  cleanPublishPath: true  # Delete old files before deploy
+
+  # Optional: Custom domain (remove or update if you have one)
+  # customDomain: yourdomain.com
+
+  # Show live logs
+  envVars:
+    - key: VITE_BACKEND_URL
+      value: https://b-qomv.onrender.com/server
+
+  # Redirect all routes to index.html (for React Router)
+  # This ensures /dashboard, /login, etc. work after deployment
+  rewriteRules:
+    - source: /dashboard
+      destination: /
+    - source: /admin
+      destination: /
+    - source: /login
+      destination: /
+
+  # Optional: Add cache headers for performance
+  headers:
+    - path: /**
+      key: X-Content-Type-Options
+      value: nosniff
+    - path: /**
+      key: X-Frame-Options
+      value: DENY
+    - path: /**
+      key: X-XSS-Protection
+      value: 1; mode=block
