@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: siteflow-api
+    runtime: node
+    envVars:
+      - key: MONGODB_URI
+        fromDatabase:
+          name: siteflow-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+    env: production
