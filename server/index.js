@@ -10,7 +10,7 @@ import xssClean from 'xss-clean';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET || 'your-ultra-secure-jwt-secret-change-in-prod';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // 🔐 Security Middleware
 app.use(helmet({ contentSecurityPolicy: false })); // Prevent XSS, secure headers
