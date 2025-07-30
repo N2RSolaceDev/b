@@ -1,7 +1,13 @@
 services:
+  # 🔹 Backend API Service
   - type: web
     name: siteflow-api
-    runtime: node
+    region: oregon
+    plan: free
+    env: production
+    rootDir: .
+    buildCommand: cd server && npm install
+    startCommand: node server/index.js
     envVars:
       - key: MONGODB_URI
         fromDatabase:
@@ -9,4 +15,17 @@ services:
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
-    env: production
+    domains:
+      - siteflow-api.onrender.com  # Auto-generated, or use custom
+
+  # 🔹 Frontend Static Site
+  - type: static
+    name: siteflow-frontend
+    region: oregon
+    plan: free
+    rootDir: .
+    buildCommand: cd client && npm install && npm run build
+    publishPath: client/dist
+    cleanPublishPath: true
+    domains:
+      - siteflow.onrender.com  # Change to your custom domain
